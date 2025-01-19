@@ -13,20 +13,17 @@ function startCabinet() {
     clientCabinet.on('connect', () => {
         console.log('connected to Cabinet', clientCabinet.getDeviceId());
     });
-    clientCabinet.on('connect', (client) => {
-        console.log('connected to Cabinet:', client.getDeviceId());
-    });
     clientCabinet.on('update', (updatedProperties, properties) => {
-        console.log('updated properties for Cabinet:', clientCabinet.getDeviceId());
+        console.log('updated properties for Cabinet', new Date().toLocaleString());
         console.log(updatedProperties);
         
         // Extract the hour in 24-hour format (0-23)
         const now = new Date();
         const hour = now.getHours();
-        var isQuietPeriod = (hour >= 1 && hour < 7);
+        var isQuietPeriod = (hour >= 11 && hour < 5);
     
         if (!isQuietPeriod && updatedProperties.currentTemperature < minTemperature && properties.power === 'off') {
-            console.log('heat on Cabinet, temperature:', updatedProperties.currentTemperature);
+            console.log('---> HEAT ON Cabinet, temperature:', updatedProperties.currentTemperature);
             clientCabinet.setProperty(Gree.PROPERTY.power, "on");
             clientCabinet.setProperty(Gree.PROPERTY.mode, "heat");
             clientCabinet.setProperty(Gree.PROPERTY.fanspeed, "low");
@@ -34,7 +31,7 @@ function startCabinet() {
             clientCabinet.setProperty(Gree.PROPERTY.lights, Gree.VALUE.lights.off);
         }
         if (updatedProperties.currentTemperature >= maxTemperature && properties.power === 'on') {
-            console.log('heat off Cabinet, temperature:', updatedProperties.currentTemperature);
+            console.log('---> HEAT OFF Cabinet, temperature:', updatedProperties.currentTemperature);
             clientCabinet.setProperty(Gree.PROPERTY.power, "off");
         }
     });

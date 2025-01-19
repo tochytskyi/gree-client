@@ -13,20 +13,17 @@ function startBedroom() {
     bedroomClient.on('connect', () => {
         console.log('connected to Bedroom', bedroomClient.getDeviceId());
     });
-    bedroomClient.on('connect', (client) => {
-        console.log('connected to Bedroom:', client.getDeviceId());
-    });
     bedroomClient.on('update', (updatedProperties, properties) => {
-        console.log('updated properties for Bedroom:', bedroomClient.getDeviceId());
+        console.log('updated properties for Bedroom', new Date().toLocaleString());
         console.log(updatedProperties);
         
         // Extract the hour in 24-hour format (0-23)
         const now = new Date();
         const hour = now.getHours();
-        var isQuietPeriod = (hour >= 1 && hour < 7);
+        var isQuietPeriod = (hour >= 11 && hour < 5);
     
         if (!isQuietPeriod && updatedProperties.currentTemperature < minTemperature && properties.power === 'off') {
-            console.log('heat on Bedroom, temperature:', updatedProperties.currentTemperature);
+            console.log('---> HEAT ON Bedroom, temperature:', updatedProperties.currentTemperature);
             bedroomClient.setProperty(Gree.PROPERTY.power, "on");
             bedroomClient.setProperty(Gree.PROPERTY.mode, "heat");
             bedroomClient.setProperty(Gree.PROPERTY.fanspeed, "low");
@@ -34,7 +31,7 @@ function startBedroom() {
             bedroomClient.setProperty(Gree.PROPERTY.lights, Gree.VALUE.lights.off);
         }
         if (updatedProperties.currentTemperature >= maxTemperature && properties.power === 'on') {
-            console.log('heat off Bedroom, temperature:', updatedProperties.currentTemperature);
+            console.log('---> HEAT OFF Bedroom, temperature:', updatedProperties.currentTemperature);
             bedroomClient.setProperty(Gree.PROPERTY.power, "off");
         }
     });
