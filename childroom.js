@@ -3,7 +3,7 @@ const Gree = require('gree-hvac-client');
 
 var childroomClient;
 const host = '192.168.0.239';
-const minTemperature = 20;
+const minTemperature = 19;
 const maxTemperature = 22;
 const workingTemperature = 23;
 
@@ -20,9 +20,9 @@ function startChildroom() {
         // Extract the hour in 24-hour format (0-23)
         const now = new Date();
         const hour = now.getHours();
-        var isQuietPeriod = (hour >= 11 && hour < 5);
+        var isEnabledPeriod = (hour >= 14 && hour < 16);
     
-        if (!isQuietPeriod && updatedProperties.currentTemperature < minTemperature && properties.power === 'off') {
+        if (isEnabledPeriod && updatedProperties.currentTemperature < minTemperature && properties.power === 'off') {
             console.log('---> HEAT ON Childroom, temperature:', updatedProperties.currentTemperature);
             childroomClient.setProperty(Gree.PROPERTY.power, "on");
             childroomClient.setProperty(Gree.PROPERTY.mode, "heat");
@@ -36,7 +36,6 @@ function startChildroom() {
         }
     });
     childroomClient.on('no_response', () => {
-        console.log('no response from Childroom');
     });
     childroomClient.on('error', (err) => {
         console.error('Error occurred:', err);

@@ -2,9 +2,10 @@
 const Gree = require('gree-hvac-client');
 
 var clientCabinet;
+var clientCabinetProperies;
 const host = '192.168.0.182';
 const minTemperature = 20;
-const maxTemperature = 22;
+const maxTemperature = 23;
 const workingTemperature = 23;
 
 function startCabinet() {
@@ -14,13 +15,14 @@ function startCabinet() {
         console.log('connected to Cabinet', clientCabinet.getDeviceId());
     });
     clientCabinet.on('update', (updatedProperties, properties) => {
+        clientCabinetProperies = updatedProperties;
         console.log('updated properties for Cabinet', new Date().toLocaleString());
         console.log(updatedProperties);
         
         // Extract the hour in 24-hour format (0-23)
         const now = new Date();
         const hour = now.getHours();
-        var isQuietPeriod = (hour >= 11 && hour < 5);
+        var isQuietPeriod = (hour >= 23 && hour < 5);
     
         if (!isQuietPeriod && updatedProperties.currentTemperature < minTemperature && properties.power === 'off') {
             console.log('---> HEAT ON Cabinet, temperature:', updatedProperties.currentTemperature);
@@ -36,7 +38,6 @@ function startCabinet() {
         }
     });
     clientCabinet.on('no_response', () => {
-        console.log('no response from Cabinet');
     });
     clientCabinet.on('error', (err) => {
         console.error('Error occurred:', err);
@@ -49,5 +50,6 @@ function startCabinet() {
 
 module.exports = {
     clientCabinet,
-    startCabinet
+    startCabinet,
+    clientCabinetProperies
 };
